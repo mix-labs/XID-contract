@@ -1,0 +1,21 @@
+type MsgIn = record { msg : text; sig : text };
+type Payload = record {
+    action : text;
+    uuid : text;
+    platform : text;
+    created_at : text;
+    persona : text;
+    identity : text;
+};
+type Result = variant { Ok : Payload; Err : VerifyError };
+type VerifyError = variant {
+    IcPrincipalErr;
+    IDExist;
+    XidCNoNameErr;
+    XidNotExist;
+    SigDecoErr;
+    ReplayErr;
+    MsgDecodeErr;
+    VerifyErr;
+};
+service : { msg_in : (MsgIn) -> (Result) query }

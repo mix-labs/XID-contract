@@ -1,20 +1,20 @@
 {
   "version": 1,
-  "dfx": "0.11.2",
+  "dfx": "0.12.1",
   "canisters": {
-    "rust_xid_backend": {
+    "xid": {
       "type": "rust",
-      "package": "rust_xid_backend",
-      "candid": "src/rust_xid_backend/rust_xid_backend.did"
+      "package": "xid",
+      "candid": "crates/xid/xid.did"
     },
-    "rust_xid_frontend": {
-      "type": "assets",
-      "source": [
-        "src/rust_xid_frontend/assets"
-      ],
-      "dependencies": [
-        "rust_xid_backend"
-      ]
+    "verify": {
+      "type": "rust",
+      "package": "verify",
+      "candid": "crates/verify/verify.did"
+    },
+    "xidc": {
+      "type": "motoko",
+      "main": "xidc/xid-center.mo"
     }
   },
   "defaults": {
@@ -25,7 +25,7 @@
   },
   "networks": {
     "local": {
-      "bind": "127.0.0.1:8000",
+      "bind": "127.0.0.1:8008",
       "type": "ephemeral"
     }
   }

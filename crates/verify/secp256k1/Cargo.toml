@@ -1,0 +1,21 @@
+[package]
+name = "secp256k1"
+version = "0.7.1"
+edition = "2018"
+
+
+[dependencies.arrayref]
+version = "0.3"
+
+[dependencies.lazy_static]
+version = "1.4.0"
+
+[dependencies.libsecp256k1-core]
+version = "0.3.0"
+default-features = false
+
+[build-dependencies.libsecp256k1-gen-ecmult]
+version = "0.3.0"
+
+[build-dependencies.libsecp256k1-gen-genmult]
+version = "0.3.0"

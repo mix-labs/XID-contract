@@ -1,0 +1,109 @@
+type Avatar = record { image_data : vec nat8; image_type : text };
+type ContentType = variant { OffChain; Twitter };
+type ContentUuid = record { uuid : text; content_type : ContentType };
+type Contents = variant {
+  TwitterContent : TwitterContent;
+  OffChainContent : OffChainContent;
+};
+type HttpRequest = record {
+  url : text;
+  method : text;
+  body : vec nat8;
+  headers : vec record { text; text };
+};
+type HttpResponse = record {
+  body : vec nat8;
+  headers : vec record { text; text };
+  streaming_strategy : opt StreamingStrategy;
+  status_code : nat16;
+};
+type ID = record { bind_time : text; platform : text; identity : text };
+type MsgIn = record { msg : text; sig : text };
+type OffChainContent = record {
+  url : text;
+  local_content_type : text;
+  file_type : text;
+  text_content : text;
+};
+type Result = variant { Ok : XidResponse; Err : XidError };
+type Result_1 = variant { Ok : vec Storage; Err : XidError };
+type Result_2 = variant { Ok : XidResponse; Err : VerifyError };
+type Storage = record {
+  content : Contents;
+  owner : text;
+  uuid : text;
+  mint_time : text;
+  upload_time : text;
+  d_platform : text;
+  is_minted : bool;
+};
+type StoreArg = record { content : Contents; uuid : text; d_platform : text };
+type StreamingCallbackToken = record {
+  key : text;
+  sha256 : opt vec nat8;
+  index : nat;
+  content_encoding : text;
+};
+type StreamingStrategy = variant {
+  Callback : record {
+    token : StreamingCallbackToken;
+    callback : func () -> ();
+  };
+};
+type TwitterContent = record {
+  url : text;
+  post_time : text;
+  text_url : text;
+  image_urls : vec text;
+  video_url : text;
+  text_content : text;
+};
+type VerifyError = variant {
+  IcPrincipalErr;
+  IDExist;
+  XidCNoNameErr;
+  XidNotExist;
+  SigDecoErr;
+  ReplayErr;
+  MsgDecodeErr;
+  VerifyErr;
+};
+type Xid = record {
+  ids : vec ID;
+  main_id : ID;
+  avatar_url : text;
+  name : text;
+  pub_key : text;
+};
+type XidArgs = record { avatar_url : opt text; name : opt text };
+type XidError = variant {
+  XidCNoNameErr;
+  UuidRepeat;
+  DataNotExist;
+  XidNotExist;
+  MainIdBan;
+  IDNotExist;
+  UuidNotExist;
+  FieldOutOfRange;
+};
+type XidResponse = variant { StoreOk; ChangeIdOk; DeleteOk; MintOk; VerifyOk };
+service : (principal) -> {
+  changeMainId : (ID) -> (Result);
+  deleteStore : (ContentUuid) -> (Result);
+  getCycleBalance : () -> (nat64) query;
+  getMainId : () -> (ID) query;
+  getStoreByUuid : (vec ContentUuid) -> (vec Storage) query;
+  getStoreList : (ContentType, nat64, nat64) -> (Result_1) query;
+  getStoreSize : (ContentType) -> (nat64) query;
+  getVersion : () -> (nat8) query;
+  getXid : () -> (Xid) query;
+  http_request : (HttpRequest) -> (HttpResponse) query;
+  setMintStatus : (ContentUuid) -> (Result);
+  setXid : (XidArgs) -> (bool);
+  unboundId : (ID) -> (Result);
+  uploadAvatar : (Avatar) -> (bool);
+  uploadStore : (StoreArg) -> (Result);
+  verifyID : (MsgIn) -> (Result_2);
+  verifyIcPost : () -> (Result_2);
+  verifyIcPre : (text) -> (bool);
+}

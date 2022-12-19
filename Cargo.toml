@@ -1,4 +1,5 @@
 [workspace]
 members = [
-    "src/rust_xid_backend",
+    "crates/xid",
+    "crates/verify",
 ]
