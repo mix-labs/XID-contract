@@ -84,17 +84,23 @@ fn get_store_list(arg : ContentType, start : usize, offset : usize) -> Result<Ve
     STATE.with(|s|{
         return match arg {
             ContentType::Twitter => {
-                if start + offset > s.twitter_store.borrow().len() {
+                if start >= s.twitter_store.borrow().len() {
                     Err(XidError::FieldOutOfRange)
                 } else {
+                    let mut tmp_offset : usize = 0;
+                    if start + offset > s.twitter_store.borrow().len() {
+                        tmp_offset = s.twitter_store.borrow().len() - start;
+                    } else {
+                        tmp_offset = offset;
+                    };
                     let mut st : usize = 0;
                     let mut res : Vec<Storage>  = Vec::new();
                     let twitter_store = s.twitter_store.borrow();
                     let twitter_vec  =
                         twitter_store.
-                        values();
+                            values();
                     for ts in twitter_vec {
-                        if st >= start && st < (start + offset) {
+                        if st >= start && st < (start + tmp_offset) {
                             res.push(Storage{
                                 owner: ts.owner.clone(),
                                 uuid: ts.uuid.clone(),
@@ -111,17 +117,23 @@ fn get_store_list(arg : ContentType, start : usize, offset : usize) -> Result<Ve
                 }
             },
             ContentType::OffChain => {
-                if start + offset > s.off_store.borrow().len() {
+                if start >= s.off_store.borrow().len() {
                     Err(XidError::FieldOutOfRange)
                 } else {
+                    let mut tmp_offset : usize = 0;
+                    if start + offset > s.twitter_store.borrow().len() {
+                        tmp_offset = s.twitter_store.borrow().len() - start;
+                    } else {
+                        tmp_offset = offset;
+                    };
                     let mut st : usize = 0;
                     let mut res : Vec<Storage>  = Vec::new();
                     let off_store = s.off_store.borrow();
-                    let off_vec  =
+                    let off_vec =
                         off_store.
                             values();
                     for os in off_vec {
-                        if st >= start && st < (start + offset) {
+                        if st >= start && st < (start + tmp_offset) {
                             res.push(Storage{
                                 owner: os.owner.clone(),
                                 uuid: os.uuid.clone(),
